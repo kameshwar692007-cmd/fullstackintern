@@ -1,0 +1,207 @@
+Redis Caching – Quick Revision Notes
+
+What is Redis?
+
+Redis (Remote Dictionary Server) is an in-memory data store that stores data in RAM instead of on disk. Since RAM is much faster than disk storage, Redis can return data in milliseconds, making applications much faster.
+
+Key Idea: Redis is a server-side cache, not a cache on the user's phone or browser.
+
+---
+
+Why Do We Need Redis?
+
+Imagine an application where thousands of users request the same data repeatedly.
+
+Without Redis:
+
+- Every request goes to the database.
+- The database performs the same query again and again.
+- This increases response time and server load.
+
+With Redis:
+
+- The first request fetches data from the database.
+- The backend stores that data in Redis.
+- Future requests get the data directly from Redis until it expires.
+
+This reduces database traffic and improves application performance.
+
+---
+
+How Redis Works
+
+1. User sends a request.
+2. Backend checks Redis.
+3. If the data exists (Cache Hit), Redis returns it immediately.
+4. If the data doesn't exist (Cache Miss), the backend fetches it from the database.
+5. The backend stores the result in Redis with an expiration time (TTL).
+6. The response is sent to the user.
+
+---
+
+Cache Hit vs Cache Miss
+
+Cache Hit
+
+- Data is already available in Redis.
+- Response is returned in a few milliseconds.
+- No database query is required.
+
+Cache Miss
+
+- Data is not available in Redis.
+- Backend queries the database.
+- Data is saved in Redis for future requests.
+- Response is returned to the user.
+
+---
+
+Client-side Cache vs Redis
+
+Client-side Cache
+
+- Stored on the user's browser or mobile device.
+- Stores images, CSS, JavaScript files, and sometimes API responses.
+- Benefits only that specific user.
+
+Redis Cache
+
+- Stored on the server.
+- Shared by all backend servers and users.
+- Stores database results, sessions, counters, and other frequently accessed data.
+
+---
+
+Professional Architecture
+
+Users send requests to the backend.
+
+The backend first checks Redis.
+
+If Redis has the data, it returns it immediately.
+
+If Redis doesn't have the data, the backend queries PostgreSQL/MySQL, stores the result in Redis, and sends the response.
+
+Redis sits between the backend and the database to reduce unnecessary database queries.
+
+---
+
+Common Professional Uses of Redis
+
+1. Database Query Caching
+
+Frequently accessed data such as:
+
+- User profiles
+- Product details
+- Trending posts
+- Homepage content
+
+is stored in Redis so repeated requests don't hit the database.
+
+---
+
+2. Session Storage
+
+After a user logs in, their session information can be stored in Redis.
+
+Each request checks Redis to verify the session quickly without repeatedly querying the database.
+
+---
+
+3. Rate Limiting
+
+Redis stores request counters.
+
+Example:
+
+- Maximum 100 requests per minute.
+- Redis increments a counter for each request.
+- If the limit is exceeded, the server returns HTTP 429 Too Many Requests.
+
+---
+
+4. Leaderboards
+
+Redis provides Sorted Sets, which are ideal for maintaining rankings in games and competitions.
+
+Example:
+
+- Player A – 9800 points
+- Player B – 7500 points
+- Player C – 6500 points
+
+Finding the Top 10 players is extremely fast.
+
+---
+
+5. Background Job Queue
+
+Instead of making users wait while emails or notifications are sent:
+
+- User submits a request.
+- Backend places a job into a Redis queue.
+- A background worker processes the job asynchronously.
+
+The user receives an immediate response while the task continues in the background.
+
+---
+
+6. Real-time Messaging
+
+Redis Pub/Sub allows instant communication between services.
+
+It is commonly used for:
+
+- Chat applications
+- Live notifications
+- Real-time updates
+
+---
+
+Advantages of Redis
+
+- Extremely fast because data is stored in RAM.
+- Reduces database load.
+- Improves application response time.
+- Supports millions of requests efficiently.
+- Helps applications scale.
+- Simple to integrate with most backend frameworks.
+
+---
+
+Limitations
+
+- RAM is more expensive than disk storage.
+- Data stored in Redis should generally be temporary or easily recreated.
+- Redis should not replace the main database for permanent data storage.
+
+---
+
+Interview Questions
+
+What is Redis?
+
+Redis is an in-memory data store used primarily for caching, session storage, queues, and real-time messaging.
+
+Why is Redis faster than a database?
+
+Redis stores data in RAM, while traditional databases primarily read from disk.
+
+What is a Cache Hit?
+
+The requested data already exists in Redis and is returned immediately.
+
+What is a Cache Miss?
+
+The requested data is not in Redis, so the backend fetches it from the database, stores it in Redis, and returns it.
+
+What happens if Redis goes down?
+
+The application falls back to the main database. Performance may decrease, but the application should continue working if designed correctly.
+
+---
+
+One-Line Summary
+
+A database stores the truth, while Redis stores the data that users are most likely to request next.
