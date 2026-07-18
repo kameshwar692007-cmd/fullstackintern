@@ -1,0 +1,420 @@
+Backend Learning Series – Day 2
+
+Race Conditions, Transactions & Concurrency Control
+
+---
+
+Core Idea
+
+A backend application is often used by thousands or even millions of users simultaneously. When multiple users try to access or modify the same data at the same time, problems can occur. This is known as concurrency.
+
+The main goal of concurrency control is to ensure that data remains correct and consistent regardless of how many users access it simultaneously.
+
+---
+
+Race Condition
+
+Definition
+
+A Race Condition occurs when two or more processes or users access and modify the same data at the same time, and the final result depends on the order in which those operations execute.
+
+The outcome becomes unpredictable because both operations "race" to complete first.
+
+---
+
+Example
+
+Suppose an online store has only 1 iPhone left in stock.
+
+Two users click Buy Now at the exact same moment.
+
+Backend Process:
+
+User A → Reads Stock = 1
+
+User B → Reads Stock = 1
+
+User A → Updates Stock = 0
+
+User B → Updates Stock = 0
+
+Result:
+
+Two successful orders for one product.
+
+This problem is called Overselling.
+
+---
+
+Why Race Conditions Occur
+
+Most backend operations follow this sequence:
+
+Read Data
+
+↓
+
+Process Logic
+
+↓
+
+Write Updated Data
+
+Between the Read and Write phases, another request may modify the same data, leading to inconsistent results.
+
+---
+
+Database Transactions
+
+Definition
+
+A Transaction is a sequence of one or more database operations executed as a single logical unit.
+
+A transaction guarantees:
+
+- Either every operation succeeds (COMMIT)
+- Or every operation is cancelled (ROLLBACK)
+
+There is no partial success.
+
+---
+
+Real-Life Example
+
+Bank Transfer
+
+Without a transaction:
+
+Debit ₹500
+
+↓
+
+Application crashes
+
+↓
+
+Receiver never receives the money.
+
+Money is lost.
+
+With a transaction:
+
+Debit
+
+↓
+
+Credit
+
+↓
+
+Commit
+
+If any step fails:
+
+Rollback
+
+The account balance remains unchanged.
+
+---
+
+ACID Properties
+
+Every reliable relational database follows the ACID principles.
+
+---
+
+A – Atomicity
+
+Meaning:
+
+Everything happens or nothing happens.
+
+If one operation fails, the database rolls back all previous operations within the transaction.
+
+Example:
+
+Money deducted
+
+Payment gateway fails
+
+↓
+
+Rollback
+
+Money returns to the sender.
+
+---
+
+C – Consistency
+
+Meaning:
+
+The database always remains in a valid state.
+
+Business rules are never violated.
+
+Examples:
+
+Stock cannot become negative.
+
+Duplicate primary keys cannot exist.
+
+Unique email addresses remain unique.
+
+Foreign key relationships stay valid.
+
+---
+
+I – Isolation
+
+Meaning:
+
+Multiple transactions should not interfere with each other.
+
+Even if 10,000 users purchase simultaneously, each transaction behaves as though it is running alone.
+
+Isolation helps prevent race conditions.
+
+---
+
+D – Durability
+
+Meaning:
+
+Once a transaction is committed, the data is permanently stored.
+
+Even if the server crashes immediately afterward, committed data is not lost.
+
+---
+
+COMMIT
+
+Commit permanently saves all changes made during a transaction.
+
+After a commit, other users can see the updated data.
+
+---
+
+ROLLBACK
+
+Rollback cancels all changes made during the transaction.
+
+The database returns to its previous consistent state.
+
+---
+
+Isolation Levels
+
+Databases provide different isolation levels depending on the balance between performance and consistency.
+
+---
+
+Read Uncommitted
+
+Fastest.
+
+Allows dirty reads.
+
+A transaction can read data that has not yet been committed.
+
+Rarely used.
+
+---
+
+Read Committed
+
+Only committed data is visible.
+
+Most commonly used isolation level.
+
+Prevents dirty reads.
+
+---
+
+Repeatable Read
+
+A row read once will return the same value throughout the transaction.
+
+Prevents non-repeatable reads.
+
+Default in MySQL.
+
+---
+
+Serializable
+
+Highest isolation level.
+
+Transactions execute as though they are processed one after another.
+
+Safest.
+
+Slowest.
+
+Used when maximum consistency is required.
+
+---
+
+Locking
+
+To prevent race conditions, databases temporarily lock rows while transactions are updating them.
+
+Other transactions must wait until the lock is released.
+
+---
+
+Pessimistic Locking
+
+Assumes conflicts are likely.
+
+Locks the row immediately before updating.
+
+SQL Example:
+
+SELECT * FROM products
+WHERE id = 101
+FOR UPDATE;
+
+Used in:
+
+- Banking
+- Ticket Booking
+- Inventory Systems
+
+---
+
+Optimistic Locking
+
+Assumes conflicts are uncommon.
+
+Does not lock rows.
+
+Instead, every row contains a Version Number or Timestamp.
+
+Before updating:
+
+Current Version = 5
+
+After another transaction updates:
+
+Version = 6
+
+If an older transaction still tries to update Version 5,
+
+the database rejects the update.
+
+Application retries the operation.
+
+Used in:
+
+- Social Media
+- Dashboards
+- User Profile Updates
+
+---
+
+Deadlock
+
+A deadlock occurs when two transactions wait for each other indefinitely.
+
+Example:
+
+Transaction A locks Table X and waits for Table Y.
+
+Transaction B locks Table Y and waits for Table X.
+
+Neither transaction can continue.
+
+Modern databases automatically detect deadlocks and abort one transaction.
+
+---
+
+Real-World Applications
+
+Amazon
+
+Prevents overselling products.
+
+BookMyShow
+
+Locks seats during payment.
+
+UPI Applications
+
+Ensures every money transfer is completed correctly.
+
+Banking Systems
+
+Uses transactions for every financial operation.
+
+Airline Reservation Systems
+
+Ensures one seat cannot be sold to multiple passengers.
+
+---
+
+Interview Questions
+
+What is a Race Condition?
+
+A race condition occurs when multiple operations access and modify shared data simultaneously, causing unpredictable or incorrect results because the outcome depends on the timing of execution.
+
+---
+
+What is a Database Transaction?
+
+A transaction is a sequence of operations executed as one logical unit. It guarantees that either all operations succeed (COMMIT) or none of them take effect (ROLLBACK).
+
+---
+
+Why are Transactions Important?
+
+Transactions ensure data consistency, prevent race conditions, and eliminate partial updates when failures occur.
+
+---
+
+What is Atomicity?
+
+Atomicity ensures that all operations in a transaction succeed together or fail together.
+
+---
+
+What is Isolation?
+
+Isolation ensures that concurrent transactions do not interfere with one another, preventing inconsistent results.
+
+---
+
+Difference Between Optimistic and Pessimistic Locking
+
+Optimistic Locking
+
+- No initial lock
+- Uses version numbers or timestamps
+- Best when conflicts are rare
+- Higher concurrency
+
+Pessimistic Locking
+
+- Locks data before modification
+- Prevents simultaneous updates
+- Best when conflicts are frequent
+- Lower concurrency but stronger consistency
+
+---
+
+Key Takeaways
+
+- Race conditions occur because multiple users access the same data simultaneously.
+- Transactions ensure all database operations succeed or fail together.
+- ACID properties guarantee reliable and consistent data.
+- Isolation prevents concurrent transactions from interfering.
+- Locking protects shared resources during updates.
+- Optimistic and pessimistic locking are two different strategies for handling concurrent modifications.
+- Reliable systems such as Amazon, banking applications, ticket booking platforms, and UPI services depend heavily on these concepts.
+
+---
+
+One-Line Summary
+
+Concurrency creates race conditions; transactions, ACID properties, isolation levels, and locking work together to ensure that data remains accurate, consistent, and reliable in multi-user backend systems.
