@@ -1,0 +1,159 @@
+Backend Learning Series – Day 3
+
+JWT vs Session Authentication (My Revision Notes)
+
+Why do we need authentication?
+
+When a user logs in, the server verifies their username and password. But for every request after that (Home, Profile, Settings, etc.), the server needs a way to identify the user without asking for the password again. This is where Session Authentication and JWT Authentication come in.
+
+---
+
+1. Session Authentication
+
+Simple Idea
+
+The server remembers the user.
+
+After login:
+
+- The server creates a unique Session ID.
+- It stores the Session ID and user details in a session store (usually Redis).
+- The browser stores only the Session ID as a cookie.
+- Every request automatically sends the cookie back to the server.
+- The server looks up the Session ID and identifies the user.
+
+Restaurant Analogy
+
+You pay once and receive Token #42.
+
+Whenever you need your food, you simply show Token #42.
+
+The restaurant checks its records and knows who you are.
+
+Similarly, the browser sends only the Session ID, and the server checks its stored sessions.
+
+Advantages
+
+- Very secure because user data stays on the server.
+- Easy to log out (just delete the session).
+
+Disadvantages
+
+- The server must store every user's session.
+- Requires a shared session store like Redis when multiple backend servers are used.
+
+---
+
+2. JWT (JSON Web Token)
+
+Simple Idea
+
+The client remembers the user.
+
+After login:
+
+- The server generates a signed JWT.
+- The client stores the JWT.
+- Every request sends the JWT in the "Authorization: Bearer <token>" header.
+- The server verifies the token's signature and identifies the user.
+
+Unlike sessions, the server does not need to store login information for every request.
+
+Passport Analogy
+
+A passport contains your information and an official signature.
+
+The airport verifies the signature instead of asking the government every time.
+
+JWT works the same way.
+
+JWT Structure
+
+A JWT has three parts:
+
+1. Header – Information about the token.
+2. Payload – User information (called claims).
+3. Signature – Proves the token was created by the server and hasn't been modified.
+
+⚠️ The payload is encoded, not encrypted, so never store passwords or confidential information inside it.
+
+Advantages
+
+- Stateless (server doesn't store sessions).
+- Easy to scale across multiple servers.
+- Great for APIs, mobile apps, and microservices.
+
+Disadvantages
+
+- Logging out is harder because the server doesn't automatically track active tokens.
+- If an access token is stolen, it remains valid until it expires (unless additional mechanisms are used).
+
+---
+
+Access Token vs Refresh Token
+
+Access Token
+
+- Short-lived (usually 15–30 minutes).
+- Used to access APIs.
+
+Refresh Token
+
+- Long-lived (days or weeks).
+- Used to request a new access token without asking the user to log in again.
+
+---
+
+Session vs JWT
+
+Session
+
+- Server remembers the user.
+- Stores Session ID in Redis/database.
+- Browser stores only the Session ID.
+- Easy logout.
+
+JWT
+
+- Client carries the signed token.
+- No session storage required.
+- Better for scalable APIs.
+- Logout requires extra handling or waiting for token expiry.
+
+---
+
+Interview Questions
+
+What is a Session?
+
+A server-side authentication mechanism where the server stores user session data and the client stores only a Session ID.
+
+What is JWT?
+
+A signed JSON Web Token used to authenticate users without storing session data on the server.
+
+Is JWT encrypted?
+
+No. It is signed, not encrypted. Anyone can decode the payload, but they cannot modify it without invalidating the signature.
+
+Why do we use Refresh Tokens?
+
+To issue new access tokens after they expire, allowing users to stay logged in securely.
+
+---
+
+My Quick Recall
+
+- Session = Server remembers me.
+- JWT = I carry my identity with me.
+- Redis is commonly used to store sessions.
+- JWT = Header + Payload + Signature.
+- Payload is readable, so never store secrets.
+- Access Token = Short life.
+- Refresh Token = Gets a new Access Token.
+- Sessions are easier to revoke.
+- JWTs are easier to scale.
+
+One-line Memory Trick
+
+"Session asks the server, JWT shows a signed ID card."
