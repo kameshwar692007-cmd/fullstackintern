@@ -1,0 +1,127 @@
+Deadlock – Quick Revision Notes
+
+Definition
+
+A deadlock occurs when two or more transactions hold locks on different resources and wait for each other to release those locks. Since each transaction is waiting for the other, none of them can continue.
+
+---
+
+Example
+
+Suppose there are two tables:
+
+- Accounts
+- Products
+
+Transaction A
+
+1. Locks Accounts
+2. Tries to lock Products (but it's already locked by Transaction B)
+
+Transaction B
+
+1. Locks Products
+2. Tries to lock Accounts (but it's already locked by Transaction A)
+
+Now:
+
+- Transaction A waits for Transaction B.
+- Transaction B waits for Transaction A.
+
+Neither can continue.
+
+This situation is called a Deadlock.
+
+---
+
+SQL Example
+
+Transaction A
+
+BEGIN;
+
+UPDATE Accounts
+SET balance = balance - 500
+WHERE id = 1;
+
+UPDATE Products
+SET stock = stock - 1
+WHERE id = 101;
+
+COMMIT;
+
+Transaction B
+
+BEGIN;
+
+UPDATE Products
+SET stock = stock - 1
+WHERE id = 101;
+
+UPDATE Accounts
+SET balance = balance - 500
+WHERE id = 1;
+
+COMMIT;
+
+If both transactions execute simultaneously, a deadlock may occur because each transaction locks a different resource first.
+
+---
+
+Real-Life Analogy
+
+Imagine a one-lane bridge.
+
+- Car A enters from one side.
+- Car B enters from the opposite side.
+
+Neither driver wants to reverse.
+
+Both wait forever.
+
+This is exactly how a deadlock works.
+
+---
+
+How Databases Handle Deadlocks
+
+Modern databases such as PostgreSQL and MySQL automatically detect deadlocks.
+
+When detected:
+
+- One transaction is chosen as the deadlock victim.
+- That transaction is rolled back.
+- The other transaction continues successfully.
+
+Applications usually retry the rolled-back transaction.
+
+---
+
+How to Prevent Deadlocks
+
+- Always acquire locks in the same order.
+- Keep transactions short.
+- Commit transactions as quickly as possible.
+- Retry transactions if a deadlock occurs.
+
+---
+
+Interview Question
+
+Q: What is a Deadlock?
+
+Answer:
+A deadlock is a situation where two or more transactions each hold a lock on one resource while waiting for another resource locked by the other transaction. Since none of them can proceed, the database detects the deadlock, rolls back one transaction, and allows the other to continue.
+
+---
+
+Quick Recall
+
+- Race Condition: Multiple transactions modify the same data simultaneously, leading to incorrect results.
+- Deadlock: Multiple transactions wait on each other's locks, so none can proceed.
+
+Memory Trick
+
+Race Condition = Running into each other.
+
+Deadlock = Waiting for each other.
