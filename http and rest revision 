@@ -1,0 +1,244 @@
+HTTP (HyperText Transfer Protocol)
+Definition
+HTTP is the communication protocol used by a client (browser, mobile app, Postman) and a server to exchange data using a request-response model.
+Request → Server → Response
+Client
+   │
+   │ HTTP Request
+   ▼
+Server
+   │ Process Request
+   ▼
+HTTP Response
+HTTP Methods
+Method
+Purpose
+GET
+Retrieve data
+POST
+Create new data
+PUT
+Replace an entire resource
+PATCH
+Update specific fields of a resource
+DELETE
+Remove a resource
+Components of an HTTP Request
+URL
+Identifies the resource.
+Example:
+https://api.example.com/users/5
+Headers
+Contain additional information about the request.
+Examples:
+Content-Type
+Authorization
+Accept
+Body
+Contains data sent to the server (mainly in POST, PUT, PATCH).
+Example:
+{
+  "name": "Kash",
+  "age": 19
+}
+Path Parameters
+Used to identify a specific resource.
+Example:
+/users/10
+Here, 10 is the user ID.
+Query Parameters
+Used to filter, search, sort, or paginate data.
+Examples:
+/users?page=2
+/products?category=laptop
+HTTP Response
+A response contains:
+Status Code
+Headers
+Response Body
+Common Status Codes
+Code
+Meaning
+200
+OK
+201
+Created
+204
+No Content
+400
+Bad Request
+401
+Unauthorized
+403
+Forbidden
+404
+Not Found
+500
+Internal Server Error
+Request-Response Cycle
+Client sends a request.
+Server receives and processes it.
+Server may interact with a database or other services.
+Server sends a response with a status code and data.
+Client displays or uses the response.
+Key Differences
+GET vs POST
+GET retrieves data.
+POST creates data.
+PUT vs PATCH
+PUT replaces the entire resource.
+PATCH updates only specified fields.
+401 vs 403
+401 Unauthorized: User is not authenticated (not logged in or invalid credentials).
+403 Forbidden: User is authenticated but doesn't have permission.
+Important Interview Questions
+What is HTTP?
+Explain the request-response cycle.
+Difference between GET and POST.
+Difference between PUT and PATCH.
+What are headers?
+What is the request body?
+Difference between path parameters and query parameters.
+Difference between 401 and 403.
+Explain common HTTP status codes.
+_______________________________________________
+REST (Representational State Transfer)
+Definition
+REST is an architectural style for designing web APIs. It provides a standard way to organize endpoints so that APIs are simple, consistent, and scalable.
+Key idea: The URL represents the resource, and the HTTP method represents the action.
+Resource
+A resource is the object your API manages.
+Examples:
+Users
+Products
+Books
+Students
+Orders
+REST endpoints use plural nouns.
+/users
+/products
+/books
+/orders
+CRUD Operations in REST
+Operation
+HTTP Method
+Endpoint
+Create
+POST
+/users
+Read All
+GET
+/users
+Read One
+GET
+/users/5
+Update Entire Resource
+PUT
+/users/5
+Update Specific Fields
+PATCH
+/users/5
+Delete
+DELETE
+/users/5
+REST Endpoint Examples
+Get all users
+GET /users
+Get one user
+GET /users/10
+Create a user
+POST /users
+Body:
+{
+  "name": "Kash",
+  "age": 19
+}
+Update a user
+PATCH /users/10
+Body:
+{
+  "age": 20
+}
+Delete a user
+DELETE /users/10
+Path Parameters
+Used to identify a specific resource.
+Example:
+/users/15
+15 is the user ID.
+Query Parameters
+Used to filter, search, sort, or paginate results.
+Examples:
+/users?page=2
+/products?category=laptop
+/rooms?city=Kuwait&price=500
+JSON Response Format
+A REST API usually returns JSON.
+Success:
+{
+  "success": true,
+  "message": "User fetched successfully",
+  "data": {
+    "id": 10,
+    "name": "Kash"
+  }
+}
+Error:
+{
+  "success": false,
+  "message": "User not found"
+}
+API Versioning
+To avoid breaking older applications, APIs are versioned.
+Example:
+/api/v1/users
+/api/v2/users
+Older clients continue using v1 while newer clients can use v2.
+REST Best Practices
+✅ Use nouns, not verbs.
+Correct:
+/users
+/orders
+Incorrect:
+/getUsers
+/createOrder
+✅ Use plural resource names.
+/users
+/products
+✅ Keep URLs lowercase.
+Correct:
+/products
+Incorrect:
+/Products
+✅ Use the correct HTTP status codes (200, 201, 204, 400, 404, etc.).
+HTTP vs REST
+HTTP
+REST
+Communication protocol
+API design architecture
+Defines how data is transferred
+Defines how APIs should be structured
+Uses methods like GET, POST, PUT, PATCH, DELETE
+Uses those methods with resource-based URLs
+Can be used without REST
+Usually built on top of HTTP
+Example: Student API
+Action
+Method
+Endpoint
+Get all students
+GET
+/students
+Get one student
+GET
+/students/1
+Create student
+POST
+/students
+Update student
+PATCH
+/students/1
+Delete student
+DELETE
+/students/1
+
